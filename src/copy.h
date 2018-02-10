@@ -379,18 +379,21 @@ static inline zend_function* pthreads_copy_internal_function(zend_function *func
 
 /* {{{ */
 static zend_function* pthreads_copy_function(zend_function *function) {
+	if (function->type == ZEND_USER_FUNCTION) {
+		return pthreads_copy_user_function(function);
+	}
+	return pthreads_copy_internal_function(function);
+} /* }}} */
+
+/* {{{ */
+static zend_function* pthreads_get_or_copy_function(zend_function *function) {
 	zend_function *copy = zend_hash_index_find_ptr(&PTHREADS_ZG(resolve), (zend_ulong)function);
 	
 	if (copy) {
 		function_add_ref(copy);
 		return copy;
 	}
-	
-	if (function->type == ZEND_USER_FUNCTION) {
-		copy = pthreads_copy_user_function(function);
-	} else {
-		copy = pthreads_copy_internal_function(function);
-	}
+	copy = pthreads_copy_function(function);
 
 	return zend_hash_index_update_ptr(&PTHREADS_ZG(resolve), (zend_ulong) function, copy);
 } /* }}} */

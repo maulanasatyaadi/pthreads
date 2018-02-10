@@ -130,7 +130,7 @@ static void prepare_class_function_table(zend_class_entry *candidate, zend_class
 		if (!zend_hash_exists(&prepared->function_table, key)) {
 			zend_string *name = zend_string_new(key);
 
-			value = pthreads_copy_function(value);
+			value = pthreads_get_or_copy_function(value);
 			zend_hash_add_ptr(&prepared->function_table, name, value);
 			zend_string_release(name);
 		}
@@ -421,7 +421,7 @@ static inline void pthreads_prepare_closures(pthreads_object_t *thread) {
 			}
 
 			named = zend_string_new(bucket->key);
-			prepared = pthreads_copy_function(function);
+			prepared = pthreads_get_or_copy_function(function);
 
 			if (!zend_hash_add_ptr(CG(function_table), named, prepared)) {
 				destroy_op_array((zend_op_array*) prepared);
@@ -623,7 +623,7 @@ static inline void pthreads_prepare_functions(pthreads_object_t* thread) {
 			continue;
 
 		name = zend_string_new(key);
-		prepared = pthreads_copy_function(value);
+		prepared = pthreads_get_or_copy_function(value);
 
 		if (!zend_hash_add_ptr(CG(function_table), name, prepared)) {
 			destroy_op_array((zend_op_array*)prepared);
