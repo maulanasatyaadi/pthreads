@@ -445,7 +445,7 @@ static int pthreads_normal_read(pthreads_object_t *threaded, void *buf, size_t m
 	int nonblock = 0;
 	char *t = (char *) buf;
 	
-	PTHREADS_SOCKET_CHECK(threaded->store.sock);
+	PTHREADS_SOCKET_CHECK_EX(threaded->store.sock, -1);
 
 #ifndef PHP_WIN32
 	m = fcntl(threaded->store.sock->fd, F_GETFL);
